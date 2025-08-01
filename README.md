@@ -1,39 +1,88 @@
-<!-- 
-This README describes the package. If you publish this package to pub.dev,
-this README's contents appear on the landing page for your package.
+Этот репозиторий содержит дополнительные правила для `custom_lint`:
 
-For information about how to write a good package README, see the guide for
-[writing package pages](https://dart.dev/tools/pub/writing-package-pages). 
+*   **missing\_type**: проверяет наличие явного типа у переменных.
+*   **missing\_comma**: подсказывает места для запятой в многострочных списках и аргументах.
 
-For general information about developing packages, see the Dart guide for
-[creating packages](https://dart.dev/guides/libraries/create-packages)
-and the Flutter guide for
-[developing packages and plugins](https://flutter.dev/to/develop-packages). 
--->
+Установка
+---------
 
-TODO: Put a short description of the package here that helps potential users
-know whether this package might be useful for them.
+В `pubspec.yaml` вашего проекта добавьте зависимость:
 
-## Features
+    dev_dependencies:
+      custom_lint:
+      my_linter:
+        git:
+            url: my-url
+    
 
-TODO: List what your package can do. Maybe include images, gifs, or videos.
+В `analysis_options.yaml` добавьте плагин:
 
-## Getting started
+    
+      analyzer:
+        plugins:
+            - custom_lint
+      
 
-TODO: List prerequisites and provide or point to information on how to
-start using the package.
+После этого запустите:
 
-## Usage
+    dart pub clean
 
-TODO: Include short and useful examples for package users. Add longer examples
-to `/example` folder. 
+    dart pub get
 
-```dart
-const like = 'sample';
-```
+И перезапустите анализатор CMD + P (VS Code)
 
-## Additional information
+    Dart: Restart Analysis Server
 
-TODO: Tell users more about the package: where to find more information, how to 
-contribute to the package, how to file issues, what response they can expect 
-from the package authors, and more.
+Правило `missing_type`
+----------------------
+
+Правило проверяет, что все объявления переменных используют явный тип вместо `var` или `final` без указания типа.
+
+### Bad:
+
+    var count = 5;
+    final name = 'Alice';
+
+### Good:
+
+    int count = 5;
+    final String name = 'Alice';
+
+* * *
+
+Правило `missing_comma`
+-----------------------
+
+Правило подсказывает, где в многострочных литералах списков и аргументных списках можно поставить завершающую запятую. Исключаются случаи с именованными параметрами-литералами карт/множеств, замыканиями, вызовами методов и созданием экземпляров.
+
+### Bad (список):
+
+    final items = [
+      'a',
+      'b'
+    ];
+
+### Good (список):
+
+    final items = [
+      'a',
+      'b',
+    ];
+
+### Bad (аргументы функции):
+
+    fetchData(
+      url,
+      headers: {
+        'Auth': token,
+      }
+    );
+
+### Good (аргументы функции):
+
+    fetchData(
+      url,
+      headers: {
+        'Auth': token,
+      },
+    );
